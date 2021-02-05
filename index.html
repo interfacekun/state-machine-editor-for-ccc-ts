@@ -242,42 +242,45 @@ interface EventNameInterface{
     #eventNameInterface#
 }
 import StateMachine from "../libs/StateMachine";
-import {AbstractComponent} from "../views/AbstractComponent";
-import {AbstractModel} from "../models/AbstractModel";
-import {AbstractController} from "../controllers/AbstractController";
-export abstract class #className#  extends cc.Component  {
+//import {AbstractComponent} from "../views/AbstractComponent";
+//import {AbstractModel} from "../models/AbstractModel";
+//import {AbstractController} from "../controllers/AbstractController";
+const {ccclass, property} = cc._decorator;
+
+@ccclass
+export class #className#  extends cc.Component  {
 
     private fsm:any;
 
-    protected fsmTrigger(eventName:string,...args:any[]){
+    fsmTrigger(eventName:string,...args:any[]){
         this.fsm[eventName](...args);
     };
 
-    protected fsmIs(stateName:string):boolean {
+    fsmIs(stateName:string):boolean {
         return this.fsm.is(stateName);
     };
 
-    protected fsmCan(eventName:string):boolean {
+    fsmCan(eventName:string):boolean {
         return this.fsm.can(eventName);
     };
 
-    protected fsmCannot(eventName:string):boolean{
+    fsmCannot(eventName:string):boolean{
         return this.fsm.cannot(eventName);
     };
 
-    protected fsmCurrent():string{
+    fsmCurrent():string{
         return this.fsm.current;
     };
 
-    protected fsmStartUp(){
+    fsmStartUp(){
         this.fsm = StateMachine.create(#fsmConfig#,this);
     };
 
-    public readonly stateName:StateNameInterface = {
+    stateName:StateNameInterface = {
         #stateNameConfig#
     };
 
-    public readonly eventName:EventNameInterface = {
+    eventName:EventNameInterface = {
         #eventNameConfig#
     };
 
@@ -334,11 +337,11 @@ export abstract class #className#  extends cc.Component  {
     function save(exportType,className){
             className = className && !!className.length ? className : "FsmImplClass";
         if(exportType === "exportLib"){
-            var stateMachineTsFile = new File([stateMachineTs], "StateMachine.ts", {type: "text/plain;charset=utf-8"});
+            var stateMachineTsFile = new File([stateMachineTs], "StateMachine.ts", {type: "text/x.typescript;charset=utf-8"});
             saveAs(stateMachineTsFile);
             return;
         }else if(exportType === "all"){
-            var stateMachineTsFile = new File([stateMachineTs], "StateMachine.ts", {type: "text/plain;charset=utf-8"});
+            var stateMachineTsFile = new File([stateMachineTs], "StateMachine.ts", {type: "text/x.typescript;charset=utf-8"});
             saveAs(stateMachineTsFile);
         }
 
@@ -526,8 +529,8 @@ export abstract class #className#  extends cc.Component  {
         //var flowForFsm = new File([fsmConfigDecorator], "flowForFsm.json", {type: "text/plain;charset=utf-8"});
         //saveAs(flowForFsm);
 
-        //var flowForGoJs = new File([myDiagram.model.toJson()], "flowForGoJs.json", {type: "text/plain;charset=utf-8"});
-        //saveAs(flowForGoJs);
+        var flowForGoJs = new File([myDiagram.model.toJson()],`${className}Config.json`, {type: "application/json;charset=utf-8"});
+        saveAs(flowForGoJs);
         // if(exportType === "exportGoJs"){
         //     //var flowForGoJsFile = new File([myDiagram.model.toJson()], "flow-for-gojs.json", {type: "text/plain;charset=utf-8"});
         //     var flowForGoJsFile = new File([JSON.stringify(modelAsObj)], "FlowForGojs.json", {type: "text/plain;charset=utf-8"});
@@ -555,7 +558,7 @@ export abstract class #className#  extends cc.Component  {
                                  //.replace(/#callbacksInterface#/g,callbacksInterface.join("\n    ") + ";\n");
         //console.log(tsString);
         if(exportType === "exportFsmTs" || exportType === "all"){
-            var fsmFile = new File([tsString], `${className}.ts`, {type: "text/plain;charset=utf-8"});
+            var fsmFile = new File([tsString], `${className}.ts`, {type: "text/x.typescript;charset=utf-8"});
             saveAs(fsmFile);
         }
     }
@@ -627,11 +630,15 @@ export abstract class #className#  extends cc.Component  {
                 reader.onload = function(e) {
                             //console.log(reader.result);
                             //let gojsResult = reader.result.match(/###(.*)###/g)[0];
-                            let gojsResult = /###(.*)###/.exec(reader.result)[1];
-                            let flowForGoJs = JSON.parse(gojsResult);
-                            //let flowForGoJs = JSON.parse(reader.result);
+                            // let gojsResult = /###(.*)###/.exec(reader.result)[1];
+                            // let flowForGoJs = JSON.parse(gojsResult);
+                            let flowForGoJs = JSON.parse(reader.result);
+                            console.log(flowForGoJs);
                             globalCallbacksText = flowForGoJs.globalCallbacksText;
-                            editor.setText(globalCallbacksText);
+                            if (globalCallbacksText) {
+                              editor.setText(globalCallbacksText);
+                            }
+
                             expandJson();
                             if(flowForGoJs){
                                 myDiagram.model = go.Model.fromJson(flowForGoJs);
