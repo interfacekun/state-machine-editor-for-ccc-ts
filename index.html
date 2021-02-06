@@ -60,27 +60,34 @@
     myDiagram.toolManager.linkingTool.isEnabled = false;
     myDiagram.scrollMode = go.Diagram.InfiniteScroll;
 
+    const isMac = function() { 
+        return /macintosh|mac os x/i.test(navigator.userAgent); 
+    }();
+
+    const combKey = isMac? 'ctrlKey': 'altKey';
+
     document.addEventListener("keydown",function(e){
-        if(e.key.toLowerCase() == 'q' && e.altKey){
+        if(e.key.toLowerCase() == 'q' && e[combKey]){
         myDiagram.toolManager.linkingTool.isEnabled = !myDiagram.toolManager.linkingTool.isEnabled;
         document.getElementById("tips").innerHTML = myDiagram.toolManager.linkingTool.isEnabled ? "link mode":"norm mode";
     }
     }.bind(this));
 
     document.addEventListener("keydown",function(e){
-         if( e.key.toLowerCase() == 'o' && e.altKey){
+         if( e.key.toLowerCase() == 'o' && e[combKey]){
              exportSelect();
          }
     });
 
     document.addEventListener("keydown",function(e){
-         if( e.key.toLowerCase() == 'h' && e.altKey){
+         if( e.key.toLowerCase() == 'h' && e[combKey]){
              getHelp();
          }
     });
 
     document.addEventListener("keydown",function(e){
-        if( e.key.toLowerCase() == 'c' && e.altKey){
+      console.log("keydown", e, isMac);
+        if( e.key.toLowerCase() == 'c' && e[combKey]){
             if(editKey !== null){
                 let node = myDiagram.findNodeForKey(editKey);
                 if(node){
